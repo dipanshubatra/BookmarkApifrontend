@@ -1,6 +1,5 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { API_BASE } from "./src/api/apiBase.js";
 
 export default defineConfig({
   plugins: [react()],
@@ -8,9 +7,9 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: API_BASE,
+        target: "http://localhost:8080",
         changeOrigin: true,
-        secure: true
+        secure: false
       }
     }
   }
