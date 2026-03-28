@@ -54,6 +54,8 @@ export default function DashboardPage() {
   const { logout } = useAuth();
   const [formValues, setFormValues] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState(null);
+  const [createSuccessPulse, setCreateSuccessPulse] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
   const [pagination, setPagination] = useState(createEmptyPageState(0, 10));
   const [page, setPage] = useState(0);
@@ -116,6 +118,34 @@ export default function DashboardPage() {
     };
   }, [activeView, page, pageSize, refreshIndex]);
 
+  useEffect(() => {
+    if (!notice) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setNotice("");
+    }, 2600);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [notice]);
+
+  useEffect(() => {
+    if (!createSuccessPulse) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCreateSuccessPulse(false);
+    }, 1200);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [createSuccessPulse]);
+
   function handleFormChange(field, value) {
     setFormValues((currentValues) => ({
       ...currentValues,
@@ -149,6 +179,7 @@ export default function DashboardPage() {
       } else {
         await createBookmark(payload);
         setNotice("Bookmark created successfully.");
+        setCreateSuccessPulse(true);
       }
 
       resetForm();
@@ -188,16 +219,22 @@ export default function DashboardPage() {
     }
   }
 
-  async function handleDeleteBookmark(id) {
-    const confirmed = window.confirm("Delete this bookmark?");
+  function handleDeleteBookmark(id) {
+    setPendingDeleteId(id);
+    setActionError("");
+    setNotice("");
+  }
 
-    if (!confirmed) {
+  async function confirmDeleteBookmark() {
+    if (pendingDeleteId === null) {
       return;
     }
 
+    const id = pendingDeleteId;
     setBusyBookmarkId(id);
     setActionError("");
     setNotice("");
+    setPendingDeleteId(null);
 
     try {
       await deleteBookmark(id);
@@ -218,6 +255,10 @@ export default function DashboardPage() {
     } finally {
       setBusyBookmarkId(null);
     }
+  }
+
+  function cancelDeleteBookmark() {
+    setPendingDeleteId(null);
   }
 
   async function handleToggleFavorite(id) {
@@ -325,6 +366,9 @@ export default function DashboardPage() {
     : activeView.mode === "tag"
       ? `Filtered by tag "${activeView.tag}"`
       : "Browse your saved bookmarks";
+  const pendingDeleteBookmark = pendingDeleteId === null
+    ? null
+    : bookmarks.find((bookmark) => bookmark.id === pendingDeleteId) ?? null;
 
   return (
     <div className="dashboard-shell glass-page">
@@ -334,7 +378,9 @@ export default function DashboardPage() {
         <header className="dashboard-header">
           <div>
             <p className="eyebrow">Bookmark Manager</p>
-            <h1>Dashboard</h1>
+            <div className="dashboard-hero__typed" aria-label="Find Saved Bookmarks.">
+              <span className="dashboard-hero__typed-text">Find Saved Bookmarks.</span>
+            </div>
             <p>{pageTitle}</p>
           </div>
 
@@ -376,6 +422,7 @@ export default function DashboardPage() {
             isSaving={isSaving}
             isLoadingBookmark={isLoadingBookmark}
             isEditing={Boolean(editingId)}
+            successPulse={createSuccessPulse}
             error={formError}
           />
         </div>
@@ -417,6 +464,32 @@ export default function DashboardPage() {
           ) : null}
         </div>
       </div>
+
+      {pendingDeleteId !== null ? (
+        <div className="confirm-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-confirm-title">
+          <div className="confirm-dialog panel">
+            <p className="eyebrow">Delete bookmark</p>
+            <h2 id="delete-confirm-title">Are you sure you want to delete this bookmark?</h2>
+            <p className="confirm-dialog__text">
+              {pendingDeleteBookmark?.title
+                ? `"${pendingDeleteBookmark.title}" will be removed from your collection.`
+                : "This bookmark will be removed from your collection."}
+            </p>
+            <div className="confirm-dialog__actions">
+              <button className="button button--ghost" type="button" onClick={cancelDeleteBookmark}>
+                Cancel
+              </button>
+              <button
+                className="button button--danger"
+                type="button"
+                onClick={confirmDeleteBookmark}
+              >
+                Confirm delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

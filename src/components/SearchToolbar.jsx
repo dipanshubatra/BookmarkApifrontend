@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function SearchToolbar({
   searchValue,
   tagValue,
@@ -10,6 +12,21 @@ export default function SearchToolbar({
   pageSize,
   onPageSizeChange
 }) {
+  const [searchPop, setSearchPop] = useState(false);
+  const [tagPop, setTagPop] = useState(false);
+
+  function handleSearch(event) {
+    setSearchPop(true);
+    window.setTimeout(() => setSearchPop(false), 900);
+    onSearchSubmit(event);
+  }
+
+  function handleTagFilter(event) {
+    setTagPop(true);
+    window.setTimeout(() => setTagPop(false), 900);
+    onTagSubmit(event);
+  }
+
   return (
     <section className="panel">
       <div className="panel__header">
@@ -24,7 +41,7 @@ export default function SearchToolbar({
       </div>
 
       <div className="toolbar">
-        <form className="toolbar__group" onSubmit={onSearchSubmit}>
+        <form className="toolbar__group" onSubmit={handleSearch}>
           <label className="field">
             <span>Keyword search</span>
             <input
@@ -37,12 +54,22 @@ export default function SearchToolbar({
               Best for finding something by text you remember.
             </small>
           </label>
-          <button className="button button--primary" type="submit">
-            Search bookmarks
+          <button
+            className={`button dashboard-cta dashboard-cta--search ${
+              searchPop ? "dashboard-cta--search-pop" : ""
+            }`}
+            type="submit"
+          >
+            <span className="dashboard-cta__label">Search bookmarks</span>
+            <span className="dashboard-cta__burst" aria-hidden="true">
+              <span className="dashboard-cta__bookmark dashboard-cta__bookmark--one">{"\uD83D\uDD16"}</span>
+              <span className="dashboard-cta__bookmark dashboard-cta__bookmark--two">{"\uD83D\uDD16"}</span>
+              <span className="dashboard-cta__bookmark dashboard-cta__bookmark--three">{"\uD83D\uDD16"}</span>
+            </span>
           </button>
         </form>
 
-        <form className="toolbar__group" onSubmit={onTagSubmit}>
+        <form className="toolbar__group" onSubmit={handleTagFilter}>
           <label className="field">
             <span>Filter by saved tag</span>
             <input
@@ -55,8 +82,18 @@ export default function SearchToolbar({
               Use this only if the bookmark already has that tag saved on it.
             </small>
           </label>
-          <button className="button button--secondary" type="submit">
-            Filter by tag
+          <button
+            className={`button dashboard-cta dashboard-cta--tag ${
+              tagPop ? "dashboard-cta--tag-pop" : ""
+            }`}
+            type="submit"
+          >
+            <span className="dashboard-cta__label">Filter by tag</span>
+            <span className="dashboard-cta__burst" aria-hidden="true">
+              <span className="dashboard-cta__tag dashboard-cta__tag--one">{"\uD83C\uDFF7"}</span>
+              <span className="dashboard-cta__tag dashboard-cta__tag--two">{"\uD83C\uDFF7"}</span>
+              <span className="dashboard-cta__tag dashboard-cta__tag--three">{"\uD83C\uDFF7"}</span>
+            </span>
           </button>
         </form>
 

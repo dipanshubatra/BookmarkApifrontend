@@ -8,6 +8,7 @@ export default function BookmarkForm({
   isSaving,
   isLoadingBookmark,
   isEditing,
+  successPulse,
   error
 }) {
   return (
@@ -75,17 +76,26 @@ export default function BookmarkForm({
         </label>
 
         <button
-          className="button button--primary button--full"
+          className={`button button--full dashboard-cta dashboard-cta--create ${
+            successPulse ? "dashboard-cta--success-pop" : ""
+          }`}
           type="submit"
           disabled={isSaving || isLoadingBookmark}
         >
-          {isLoadingBookmark
-            ? "Loading bookmark..."
-            : isSaving
-              ? "Saving..."
-              : isEditing
-                ? "Update bookmark"
-                : "Create bookmark"}
+          <span className="dashboard-cta__label">
+            {isLoadingBookmark
+              ? "Loading bookmark..."
+              : isSaving
+                ? "Saving..."
+                : isEditing
+                  ? "Update bookmark"
+                  : "Create bookmark"}
+          </span>
+          <span className="dashboard-cta__burst" aria-hidden="true">
+            <span className="dashboard-cta__tick dashboard-cta__tick--one">✓</span>
+            <span className="dashboard-cta__tick dashboard-cta__tick--two">✓</span>
+            <span className="dashboard-cta__tick dashboard-cta__tick--three">✓</span>
+          </span>
         </button>
       </form>
     </section>
