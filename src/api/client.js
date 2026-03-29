@@ -2,7 +2,6 @@ import axios from "axios";
 import { tokenStorage } from "../utils/tokenStorage";
 import { API_BASE, API_PREFIX } from "./apiBase";
 
-import { API_BASE, API_PREFIX } from "./apiBase";
 const API_BASE_URL = `${API_BASE}${API_PREFIX}`;
 
 export const api = axios.create({
@@ -39,6 +38,7 @@ function flushRefreshQueue(error, accessToken) {
 
 export async function requestFreshAccessToken() {
   const response = await refreshClient.post("/auth/refresh");
+  console.log("🔁 REFRESH RESPONSE:", response.data)
   const nextToken = response.data?.accessToken;
 
   if (!nextToken) {
@@ -50,12 +50,13 @@ export async function requestFreshAccessToken() {
 
 api.interceptors.request.use((config) => {
   const accessToken = tokenStorage.get();
+  console.log("🚀 TOKEN FROM STORAGE:", accessToken);
 
   if (accessToken) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
-
+  console.log("📡 FINAL HEADERS:", config.headers);
   return config;
 });
 
