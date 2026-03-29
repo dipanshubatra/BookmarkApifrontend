@@ -57,9 +57,9 @@ export default function DashboardPage() {
   const [createSuccessPulse, setCreateSuccessPulse] = useState(false);
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
-  const [pagination, setPagination] = useState(createEmptyPageState(0, 10));
+  const [pagination, setPagination] = useState(createEmptyPageState(0, 5));
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [refreshIndex, setRefreshIndex] = useState(0);
   const [searchInput, setSearchInput] = useState("");
   const [tagInput, setTagInput] = useState("");
