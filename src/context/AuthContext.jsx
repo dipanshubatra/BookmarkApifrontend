@@ -69,6 +69,7 @@ export function AuthProvider({ children }) {
 
   async function login(credentials) {
     const data = await loginUser(credentials);
+    console.log("LOGIN RESPONSE:", data);
 
     if (!data?.accessToken) {
       throw new Error("Login response did not include an access token.");
