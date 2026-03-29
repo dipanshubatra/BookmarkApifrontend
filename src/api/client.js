@@ -2,7 +2,7 @@ import axios from "axios";
 import { tokenStorage } from "../utils/tokenStorage";
 import { API_BASE, API_PREFIX } from "./apiBase";
 
-const API_BASE_URL = `${API_BASE}${API_PREFIX}`;
+const API_BASE_URL = API_BASE;
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
